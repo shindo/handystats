@@ -15,53 +15,44 @@
 * License along with this library.
 */
 
-#ifndef HANDYSTATS_EVENT_MESSAGE_HPP_
-#define HANDYSTATS_EVENT_MESSAGE_HPP_
+#ifndef HANDYSTATS_EVENT_MESSAGE_BLOCK_IMPL_HPP_
+#define HANDYSTATS_EVENT_MESSAGE_BLOCK_IMPL_HPP_
 
-#include <string>
-#include <vector>
-
-#include <handystats/chrono.hpp>
-
-#include "message_queue_impl.hpp"
-
+#include "events/event_message_impl.hpp"
 
 namespace handystats { namespace events {
 
-struct event_message_block;
-
-namespace event_destination_type {
-enum : char {
-	COUNTER = 0,
-	GAUGE,
-	TIMER,
-	ATTRIBUTE
-};
-}
-
-struct event_message : message_queue::node
+struct event_message_block
 {
-	char destination_type;
-	char event_type;
-	std::string destination_name;
+	static const size_t BLOCK_SIZE = 1 << 10;
 
-	chrono::time_point timestamp;
-
-	event_message_block* block;
-
-	void* event_data;
-};
-
-event_message* allocate_event_message();
-
-void delete_event_message(event_message* message);
-
-struct event_message_deleter {
-	void operator() (event_message* message) const {
-		delete_event_message(message);
+	event_message_block()
+		: allocated(0)
+		, processed(0)
+	{
 	}
+
+	event_message* allocate() {
+		messages[allocated].block = this;
+		return &messages[allocated++];
+	}
+
+	void acknowledge(const event_message*) {
+		processed++;
+	}
+
+	// members' layout tries to avoid false sharing
+	// between allocated and processed
+
+	// number of allocated messages
+	uint64_t allocated;
+
+	event_message messages[BLOCK_SIZE];
+
+	// number of processed messages
+	uint64_t processed;
 };
 
 }} // namespace handystats::events
 
-#endif // HANDYSTATS_EVENT_MESSAGE_HPP_
+#endif // HANDYSTATS_EVENT_MESSAGE_BLOCK_IMPL_HPP_

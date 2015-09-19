@@ -26,6 +26,7 @@
 #include <handystats/core.h>
 
 #include "events/event_message_impl.hpp"
+#include "events/memory_pool_impl.hpp"
 #include "message_queue_impl.hpp"
 #include "internal_impl.hpp"
 #include "metrics_dump_impl.hpp"
@@ -49,14 +50,12 @@ std::thread processor_thread;
 static void process_message_queue() {
 	auto* message = message_queue::pop();
 
-	chrono::time_point timestamp;
-
 	if (message) {
 		last_message_timestamp = std::max(last_message_timestamp, message->timestamp);
 		internal::process_event_message(*message);
-	}
 
-	events::delete_event_message(message);
+		events::delete_event_message(message);
+	}
 }
 
 static void run_processor() noexcept {
@@ -88,6 +87,7 @@ void initialize() {
 
 	metrics_dump::initialize();
 	internal::initialize();
+	events::memory_pool::initialize();
 	message_queue::initialize();
 
 	if (!config::core_opts.enable) {
@@ -111,6 +111,7 @@ void finalize() {
 
 	internal::finalize();
 	message_queue::finalize();
+	events::memory_pool::finalize();
 	metrics_dump::finalize();
 	config::finalize();
 }

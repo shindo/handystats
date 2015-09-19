@@ -15,6 +15,7 @@
 * License along with this library.
 */
 
+#include <handystats/common.h>
 #include <handystats/chrono.hpp>
 
 #include "config_impl.hpp"
@@ -30,7 +31,10 @@ event_message* create_init_event(
 		const metrics::timer::time_point& timestamp
 	)
 {
-	event_message* message = new event_message;
+	event_message* message = allocate_event_message();
+	if (!message) {
+		return nullptr;
+	}
 
 	message->destination_name.swap(timer_name);
 	message->destination_type = event_destination_type::TIMER;
@@ -44,7 +48,6 @@ event_message* create_init_event(
 }
 
 void delete_init_event(event_message* message) {
-	delete message;
 }
 
 
@@ -54,7 +57,10 @@ event_message* create_start_event(
 		const metrics::timer::time_point& timestamp
 	)
 {
-	event_message* message = new event_message;
+	event_message* message = allocate_event_message();
+	if (!message) {
+		return nullptr;
+	}
 
 	message->destination_name.swap(timer_name);
 	message->destination_type = event_destination_type::TIMER;
@@ -68,7 +74,6 @@ event_message* create_start_event(
 }
 
 void delete_start_event(event_message* message) {
-	delete message;
 }
 
 
@@ -78,7 +83,10 @@ event_message* create_stop_event(
 		const metrics::timer::time_point& timestamp
 	)
 {
-	event_message* message = new event_message;
+	event_message* message = allocate_event_message();
+	if (!message) {
+		return nullptr;
+	}
 
 	message->destination_name.swap(timer_name);
 	message->destination_type = event_destination_type::TIMER;
@@ -92,7 +100,6 @@ event_message* create_stop_event(
 }
 
 void delete_stop_event(event_message* message) {
-	delete message;
 }
 
 
@@ -102,7 +109,10 @@ event_message* create_discard_event(
 		const metrics::timer::time_point& timestamp
 	)
 {
-	event_message* message = new event_message;
+	event_message* message = allocate_event_message();
+	if (!message) {
+		return nullptr;
+	}
 
 	message->destination_name.swap(timer_name);
 	message->destination_type = event_destination_type::TIMER;
@@ -116,7 +126,6 @@ event_message* create_discard_event(
 }
 
 void delete_discard_event(event_message* message) {
-	delete message;
 }
 
 
@@ -126,7 +135,10 @@ event_message* create_heartbeat_event(
 		const metrics::timer::time_point& timestamp
 	)
 {
-	event_message* message = new event_message;
+	event_message* message = allocate_event_message();
+	if (!message) {
+		return nullptr;
+	}
 
 	message->destination_name.swap(timer_name);
 	message->destination_type = event_destination_type::TIMER;
@@ -140,7 +152,6 @@ event_message* create_heartbeat_event(
 }
 
 void delete_heartbeat_event(event_message* message) {
-	delete message;
 }
 
 
@@ -150,7 +161,10 @@ event_message* create_set_event(
 		const metrics::timer::time_point& timestamp
 	)
 {
-	event_message* message = new event_message;
+	event_message* message = allocate_event_message();
+	if (!message) {
+		return nullptr;
+	}
 
 	message->destination_name.swap(timer_name);
 	message->destination_type = event_destination_type::TIMER;
@@ -171,7 +185,6 @@ event_message* create_set_event(
 }
 
 void delete_set_event(event_message* message) {
-	delete message;
 }
 
 

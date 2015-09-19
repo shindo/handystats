@@ -17,6 +17,8 @@
 
 #include <algorithm>
 
+#include <handystats/common.h>
+
 #include "events/attribute_impl.hpp"
 
 
@@ -28,7 +30,10 @@ event_message* create_set_event(
 		const metrics::attribute::time_point& timestamp
 	)
 {
-	event_message* message = new event_message;
+	event_message* message = allocate_event_message();
+	if (!message) {
+		return nullptr;
+	}
 
 	message->destination_name.swap(attribute_name);
 	message->destination_type = event_destination_type::ATTRIBUTE;
@@ -43,8 +48,6 @@ event_message* create_set_event(
 
 void delete_set_event(event_message* message) {
 	delete static_cast<metrics::attribute::value_type*>(message->event_data);
-
-	delete message;
 }
 
 void delete_event(event_message* message) {
